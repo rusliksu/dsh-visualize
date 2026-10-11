@@ -29,7 +29,7 @@ dsh plugin --profile web add @nagi-ovo/dsh-visualize
 
 也可以从 GitHub 安装：`dsh plugin --profile web add github:Nagi-ovo/dsh-visualize`。可以运行 `dsh --profile web --dump-config` 确认插件已经进入最终配置。需要修改源码时，克隆仓库并在仓库目录运行 `dsh plugin --profile web add .`；构建产物已经提交，不需要额外构建。使用社区 [plugin-registry](https://github.com/dsh-external/plugin-registry) 的用户也可以从「设置 → 插件」安装。
 
-兼容 DSH 0.1.1-rc.2 到 0.2.0-rc.2。
+此分支适用于 DSH 0.2.0-rc.2，包括桌面应用。安装到桌面配置时使用 `--profile desktop`，更新插件后重启应用。
 
 ## 怎么用
 
@@ -45,6 +45,6 @@ DSH 默认会把已完成回合的工具过程折叠起来。折叠时，这一�
 
 ## 限制
 
-目前只在 Web UI 中渲染交互卡片，TUI 和 headless 客户端会显示普通工具结果。卡片内的按钮暂时不能向主对话发送 follow-up 消息。
+桌面和 Web 对话均可渲染交互卡片，TUI 和 headless 客户端会显示普通工具结果。PTC 调用完成后，卡片的完整内容会保存在嵌套工具结果中，支持更新和会话重放，不改变程序返回值。DSH 0.2 不提供旧版流式预览钩子，因此在工具完成后显示卡片。卡片内的按钮暂时不能向主对话发送 follow-up 消息。
 
 灵感来自 Codex 桌面端的 `/visualize`；skill 的分层 reference 和 Chart.js 优先路线借鉴了 [himself65/finance-skills](https://github.com/himself65/finance-skills/tree/main/plugins/ui-tools/skills/generative-ui)。

@@ -144,10 +144,10 @@ function Preview({ argsRaw }: { argsRaw: string }) {
  * a `visualize` tool-call block.
  */
 export function StreamingPreview({ session }: StreamingPreviewProps) {
-  // Defensive guard mirroring the official dock rows: a host passing no
-  // session must degrade to an empty dock instead of crashing.
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  const blocks = session?.partial?.blocks
+  // DSH 0.2 removed partial from SessionSnapshot; retain the legacy dock on
+  // older hosts while settled cards use the durable result path on both.
+  const legacy = session as { partial?: { blocks?: readonly { kind: string; name?: string; argsRaw?: string }[] } } | undefined
+  const blocks = legacy?.partial?.blocks
   if (blocks === undefined) return null
   // Last matching block: a turn can contain several visualize calls; only the
   // most recent one can still be streaming.

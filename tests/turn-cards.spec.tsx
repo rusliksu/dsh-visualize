@@ -79,6 +79,26 @@ describe('turn cards definition', () => {
     expect(state.cards.map(card => [card.callId, card.meta.title])).toEqual([['c', 'A2'], ['b', 'B']])
   })
 
+  it('keeps completed PTC cards visible after the process fold, including updates', () => {
+    const nested = (seq: number, callId: string, fragment: string, isError = false) => ({
+      type: 'tool/ptc-dispatch', seq,
+      data: {
+        rootCallId: 'program-1', parentCallId: 'program-1', subCallId: callId,
+        name: 'visualize', arguments: {}, isError,
+        content: [{ type: 'text', text: 'dsh-visualize/v1:' + JSON.stringify({
+          turn: 1, callId, meta: { kind: 'visualize', fragment, title: 'PTC card', mode: 'inline', path: '/work/viz/card.html' },
+        }) }],
+      },
+    }) as never
+    const state = reduce([
+      nested(3, 'program-1:ptc:1', '<div>before</div>'),
+      nested(5, 'program-1:ptc:2', '<div>after</div>'),
+      nested(6, 'program-1:ptc:3', '<div>failed</div>', true),
+    ])
+    expect(cardsBefore(turnWith(state.cards), 7).map(card => [card.meta.path, card.meta.fragment]))
+      .toEqual([['/work/viz/card.html', '<div>after</div>']])
+  })
+
   it('publishes Turn data only, reusing the previous value while unchanged', () => {
     const state = reduce([result(3, 'a', meta('viz/a.html'))])
     const def = turnCardsDefinition

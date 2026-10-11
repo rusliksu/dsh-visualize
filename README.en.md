@@ -29,13 +29,15 @@ dsh plugin --profile web add @nagi-ovo/dsh-visualize
 
 GitHub also works: `dsh plugin --profile web add github:Nagi-ovo/dsh-visualize`. Run `dsh --profile web --dump-config` to confirm that the plugin is present in the final configuration. For local development, clone the repository and run `dsh plugin --profile web add .` from its root; committed build output means no separate build step is required. Users of the community [plugin-registry](https://github.com/dsh-external/plugin-registry) can also install it from Settings → Plugins.
 
-Compatible with DSH 0.1.1-rc.2 through 0.2.0-rc.2.
+This fork targets DSH 0.2.0-rc.2, including the desktop app. For a desktop profile, use `--profile desktop` in the install command and restart the app after updating the plugin.
 
 ## Use it
 
 Tell the model what you want to explore, for example, “make an adjustable visualization of a sorting algorithm.” The model writes an HTML fragment, then calls `visualize(path, title?, mode?)` to place it in the conversation. Side-by-side comparisons can use `mode: "wide"`.
 
 Cards follow the DSH light or dark theme and whale-blue palette. Session replay restores them from the persistent tool result, so the original fragment file does not need to remain on disk.
+
+Cards created or updated inside a PTC program also survive session replay. The plugin stores their completed presentation in the nested tool result because DSH 0.2 does not retain nested `presentationMeta`. The program's returned value stays unchanged.
 
 By default DSH folds a finished turn's tool process. While it does, the turn's cards also appear under the final answer, so you see them without opening the process; with Work details set to Verbose they stay in place only.
 
@@ -45,6 +47,6 @@ Each card runs in a sandboxed iframe with an opaque origin and cannot access the
 
 ## Limitations
 
-Interactive cards currently render only in the Web UI. TUI and headless clients show the standard tool result instead. Buttons inside a card cannot yet send follow-up messages to the conversation.
+Interactive cards render in the desktop and Web chat. TUI and headless clients show the standard tool result instead. DSH 0.2 shows PTC cards after the tool completes; the older streaming-preview hook is unavailable there. Buttons inside a card cannot yet send follow-up messages to the conversation.
 
 Inspired by `/visualize` in the Codex desktop app. The layered skill references and Chart.js-first approach draw from [himself65/finance-skills](https://github.com/himself65/finance-skills/tree/main/plugins/ui-tools/skills/generative-ui).

@@ -21,6 +21,7 @@ import type { ToolCallViewProps } from '@deepseek-ai/dsh-client-ui-tool/client'
 import { visualizeMetaFrom, visualizeMetaFromArgs, type VisualizeMeta } from '../fragment.ts'
 import { buildFrameDoc, HEIGHT_MESSAGE_TYPE } from '../shell.ts'
 import { resolveTheme } from './theme.ts'
+import { nestedPresentation } from '../presentation.ts'
 
 /** Iframe height bounds; content beyond the cap scrolls inside the frame. */
 const MIN_HEIGHT = 48
@@ -138,7 +139,7 @@ export function VisualizeCard({ callId, block }: ToolCallViewProps) {
   if (block.isError) {
     return <div style={headerStyle}>Visualize · {firstResultLine(block.content)}</div>
   }
-  const meta = visualizeMetaFrom(block.meta) ?? visualizeMetaFromArgs(argsRaw)
+  const meta = visualizeMetaFrom(block.meta) ?? nestedPresentation(block.content)?.meta ?? visualizeMetaFromArgs(argsRaw)
   if (meta === undefined) {
     // A settled call without either the descriptor or a parseable fragment:
     // show the durable result text instead of guessing at markup.

@@ -17,6 +17,8 @@ import { defineTool, type ToolDefinition } from '@deepseek-ai/dsh-tools'
 import type { FsTarget } from '@deepseek-ai/dsh-fs'
 // Type-only: pulls the `ctx.get('sandboxPolicy')` Context merge.
 import type {} from '@deepseek-ai/dsh-sandbox-policy'
+import type {} from '@deepseek-ai/dsh-session-projection'
+import { PRESENTATION_PREFIX } from './presentation.ts'
 import { SKILL_BODY_PATH, SKILL_RESOURCE_DIR } from './skill.ts'
 import {
   applyFragmentPatch,
@@ -134,6 +136,18 @@ export function visualizeTool(ctx: Context, maxFragmentBytes: number): ToolDefin
     // conflict. An update reads a card before rewriting it, so parallel
     // updates would each patch a base the other has already superseded.
     isConcurrencySafe: args => (args.action ?? 'create') === 'create',
+    finalizeContent(exec, result) {
+      if (exec.parent === undefined || exec.agent === undefined || result.isError) return undefined
+      const turn = ctx.get('sessionProjections')?.stateOf(exec.agent.session, 'turnBoundary')?.lastTurn
+      if (turn === undefined || !Number.isSafeInteger(turn) || turn < 0) return undefined
+      const value = result.value
+      if (value === null || typeof value !== 'object' || Array.isArray(value)) return undefined
+      const meta = visualizeMetaFrom({ ...value, kind: 'visualize' })
+      if (meta === undefined) return undefined
+      // The PTC program still receives the unchanged canonical value. This
+      // record survives in tool/ptc-dispatch without introducing a log event type.
+      return [...result.content, { type: 'text', text: PRESENTATION_PREFIX + JSON.stringify({ turn, callId: exec.callId, meta }) }]
+    },
     async execute(args, exec) {
       const action = (args.action ?? 'create') as VisualizeAction
       // Session-level sandbox policy, as the official fs tools resolve it: the

@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "types": ["node", "react"],
     "lib": ["es2022", "dom", "dom.iterable"]
   },
   "include": ["src/client", "src/shell.ts", "tests/client.spec.ts", "tests/turn-cards.spec.tsx"],

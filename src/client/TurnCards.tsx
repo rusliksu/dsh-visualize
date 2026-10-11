@@ -21,6 +21,7 @@ import type { HostObservable, InjectFace, PropsRuntime } from '@deepseek-ai/dsh-
 // Type-only: pulls the `conversation.chat.turnTail` SlotMap declaration.
 import type {} from '@deepseek-ai/dsh-client-ui-chat/client'
 import { visualizeMetaFrom, type VisualizeMeta } from '../fragment.ts'
+import { nestedPresentation } from '../presentation.ts'
 import { Frame } from './VisualizeCard.tsx'
 
 /** Definition kind and Turn data key; namespaced by package to stay unique. */
@@ -66,6 +67,18 @@ function resultMeta(data: ToolResultData): VisualizeMeta | undefined {
   return data.message.isError === true ? undefined : visualizeMetaFrom(data.meta)
 }
 
+/** Normalize root results and completed PTC calls onto the same card contract. */
+function resultData(event: { readonly type: string; readonly data: unknown }): ToolResultData | undefined {
+  if (event.type === 'tool/result') return event.data as ToolResultData
+  if (event.type !== 'tool/ptc-dispatch') return undefined
+  const data = event.data as { name?: string; isError?: boolean; content?: unknown }
+  if (data.name !== 'visualize' || data.isError === true) return undefined
+  const record = nestedPresentation(data.content)
+  return record === undefined ? undefined : {
+    turn: record.turn, meta: record.meta, message: { source: { callId: record.callId } },
+  }
+}
+
 /**
  * Fold one result into the turn's cards. A repeated call id (a later surface
  * replacement of the same result) keeps the first; a later card at an existing
@@ -87,17 +100,16 @@ export const turnCardsDefinition: ConversationNodeDefinition<TurnCardsState> = {
   kind: TURN_CARDS_KEY,
   match: (event) => {
     if (event.type === 'turn/start') return { id: String(event.data.turn), role: 'start' }
-    if (event.type !== 'tool/result') return null
-    const data = event.data as ToolResultData
-    return resultMeta(data) === undefined ? null : { id: String(data.turn), role: 'update' }
+    const data = resultData(event)
+    return data === undefined || resultMeta(data) === undefined ? null : { id: String(data.turn), role: 'update' }
   },
   start: (_context, match) => {
     if (match.event.type !== 'turn/start') throw new Error('dsh-visualize: turn cards start requires turn/start')
     return { turn: match.event.data.turn, cards: [] }
   },
   update: (context, match) => {
-    if (match.event.type !== 'tool/result') return context.state
-    const data = match.event.data as ToolResultData
+    const data = resultData(match.event)
+    if (data === undefined) return context.state
     const meta = resultMeta(data)
     if (meta === undefined) return context.state
     const cards = foldCard(context.state.cards, { callId: String(data.message.source.callId), seq: match.event.seq, meta })

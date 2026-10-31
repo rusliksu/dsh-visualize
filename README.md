@@ -20,7 +20,7 @@ git clone --branch ruslan-build https://github.com/rusliksu/dsh-visualize.git
 cd dsh-visualize
 npm install && npm run build
 npm pack
-dsh plugin --profile desktop add ./nagi-ovo-dsh-visualize-0.1.7-ptc.1.tgz
+dsh plugin --profile desktop add ./nagi-ovo-dsh-visualize-0.1.7-ptc.2.tgz
 ```
 
 Или сразу из ветки:

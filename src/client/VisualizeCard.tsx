@@ -29,6 +29,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import type { ToolCallViewProps } from '@deepseek-ai/dsh-client-ui-tool/client'
 import { visualizeMetaFrom, visualizeMetaFromArgs, type VisualizeMeta } from '../fragment.ts'
+import { nestedPresentation } from '../presentation.ts'
 import { buildFrameDoc, HEIGHT_MESSAGE_TYPE, type FrameVariant } from '../shell.ts'
 import { buildWindowDoc, FRAME_SANDBOX } from '../window-doc.ts'
 import { resolveTheme } from './theme.ts'
@@ -468,7 +469,11 @@ export function VisualizeCard({ callId, block }: ToolCallViewProps) {
   const persisted = visualizeMetaFrom(block.meta)
   if (persisted !== undefined) noteSettledStyle(persisted.style, argsRaw)
   const fromArgs = persisted === undefined ? visualizeMetaFromArgs(argsRaw) : undefined
-  const meta = persisted ?? (fromArgs === undefined ? undefined : { ...fromArgs, style: liveStyle() })
+  // PTC replay keeps the durable content but drops presentationMeta: the record
+  // the tool appended to it is the only way back to the frame.
+  const nested = persisted === undefined && fromArgs === undefined ? nestedPresentation(block.content) : undefined
+  if (nested !== undefined) noteSettledStyle(nested.meta.style, argsRaw)
+  const meta = persisted ?? (fromArgs === undefined ? nested?.meta : { ...fromArgs, style: liveStyle() })
   if (meta === undefined) {
     // A settled call without either the descriptor or a parseable fragment:
     // show the durable result text instead of guessing at markup.

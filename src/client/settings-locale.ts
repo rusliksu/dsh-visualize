@@ -98,8 +98,53 @@ export const ZH: Record<SettingsKey, string> = {
   placeholder: '例如：强调色用青绿色，坐标轴标签用英文。',
 }
 
-/** The two languages the page ships. */
-export type SettingsLang = 'zh' | 'en'
+
+/** Russian copy (this fork). */
+export const RU: Record<SettingsKey, string> = {
+  styleHeading: 'Стиль карточки',
+  styleIntro: 'Новые карточки используют этот стиль. Уже созданные в диалоге сохраняют свой стиль.',
+  'style.whale': 'Кит',
+  'style.whale.desc': 'Как интерфейс DSH',
+  'style.editorial': 'Журнал',
+  'style.editorial.desc': 'Заголовок-вывод, одна сюжетная линия',
+  'style.paper': 'Статья',
+  'style.paper.desc': 'Как рисунок в статье',
+  'style.sketch': 'Набросок',
+  'style.sketch.desc': 'От руки, как на доске',
+  'style.terminal': 'Терминал',
+  'style.terminal.desc': 'Моноширинный, как терминал',
+  defaultTag: 'по умолчанию',
+  saving: 'Сохраняю…',
+  saved: 'Сохранено. Следующая карточка будет в стиле «{style}».',
+  saveFailed: 'Не удалось сохранить стиль. Попробуйте ещё раз.',
+  readOnly: 'Этот профиль нельзя редактировать отсюда.',
+  overridden: 'Задано в профиле',
+  reset: 'Вернуть стиль по умолчанию',
+  unavailableTitle: 'В этой версии dsh нельзя сменить стиль карточки здесь',
+  unavailableBody: 'Задайте его в {path}:',
+  previewTitle: 'Регистраций за неделю: +18%',
+  previewNote: 'Регистрации по неделям, последние 8',
+  filesHeading: 'Свои файлы стиля',
+  filesIntro: 'Заметки, которые модель читает после встроенного стиля: цвета, формулировки. Файл рабочего пространства читается последним. Каждый файл — до {max} байт.',
+  globalFile: 'Все рабочие пространства',
+  workspaceFile: 'Рабочее пространство',
+  workspacePick: 'Рабочее пространство',
+  fileExists: 'Есть',
+  fileMissing: 'Не создан',
+  fileBlocked: 'Этот путь — ссылка или не обычный файл, редактировать здесь нельзя.',
+  bytes: '{bytes} / {max} байт',
+  tooLarge: 'Превышение лимита {max} байт на {over} байт.',
+  saveFile: 'Сохранить',
+  fileSaved: 'Сохранено. Применится при следующей загрузке skill.',
+  fileRemoved: 'Сохранено пустым — файл удалён.',
+  fileSaveFailed: 'Не удалось сохранить файл: {reason}',
+  filesUnavailable: 'В этой версии dsh нельзя редактировать файлы здесь. Отредактируйте напрямую:',
+  filesLoading: 'Читаю файлы стиля…',
+  placeholder: 'Например: акцентный цвет — бирюзовый, подписи осей — по-русски.',
+}
+
+/** The languages the page ships. */
+export type SettingsLang = 'zh' | 'en' | 'ru'
 
 /** A translate function over the page's keys. */
 export type Translate = (key: SettingsKey, params?: Record<string, string | number>) => string
@@ -110,7 +155,10 @@ export type Translate = (key: SettingsKey, params?: Record<string, string | numb
  * @returns English only for an `en` locale; everything else reads Chinese.
  */
 export function settingsLang(active: string | undefined): SettingsLang {
-  return active !== undefined && active.toLowerCase().startsWith('en') ? 'en' : 'zh'
+  const lang = active?.toLowerCase() ?? ''
+  // lokal: русская локаль DSH получает русскую страницу настроек.
+  if (lang.startsWith('ru')) return 'ru'
+  return lang.startsWith('en') ? 'en' : 'zh'
 }
 
 /**
@@ -134,7 +182,7 @@ function fill(text: string, params: Record<string, string | number> | undefined)
  * @returns the translate function.
  */
 export function translator(lang: SettingsLang): Translate {
-  const dict: Record<SettingsKey, string> = lang === 'en' ? EN : ZH
+  const dict: Record<SettingsKey, string> = lang === 'ru' ? RU : lang === 'en' ? EN : ZH
   return (key, params) => fill(dict[key], params)
 }
 

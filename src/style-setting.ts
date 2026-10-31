@@ -38,7 +38,7 @@ type FieldSchema = z<StyleId, StyleSetting>
 export function styleFieldSchema(schema: typeof z = z): FieldSchema {
   const field = schema.union(STYLE_IDS.map(id => schema.const(id).description(STYLES[id].label)))
     .default(DEFAULT_STYLE)
-    .description('Card style · 卡片风格') as unknown as { volatile?: () => unknown }
+    .description('Card style · Стиль карточки') as unknown as { volatile?: () => unknown }
   return (typeof field.volatile === 'function' ? field.volatile() : field) as FieldSchema
 }
 

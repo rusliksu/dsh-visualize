@@ -149,7 +149,7 @@ export function registerSettingsSection(ctx: ClientContext): void {
         name: 'settings.section',
         id: SECTION_ID,
         order: 95,
-        label: () => lang() === 'en' ? 'Visualize' : '可视化',
+        label: () => lang() === 'ru' ? 'Визуализация' : lang() === 'en' ? 'Visualize' : '可视化',
         inject: () => ({
           ...locale === undefined ? {} : { hooks: { locale } },
           form: styleFormOf(ctx),

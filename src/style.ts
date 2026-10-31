@@ -85,14 +85,14 @@ const GOOGLE_FONTS = 'https://fonts.googleapis.com/css2?'
 export const STYLES: Readonly<Record<StyleId, StylePreset>> = {
   whale: {
     id: 'whale',
-    label: '鲸蓝 · Whale (default)',
+    label: 'Кит · Whale (по умолчанию)',
     // Everything comes from the host bridge and the stylesheet fallbacks.
     vars: {},
     chart: {},
   },
   editorial: {
     id: 'editorial',
-    label: '报刊 · Editorial',
+    label: 'Журнал · Editorial',
     vars: {
       'foreground': ld('#1a1a1a', '#f2efe9'),
       'muted-foreground': ld('#5f5f5f', '#a8a39b'),
@@ -118,7 +118,7 @@ export const STYLES: Readonly<Record<StyleId, StylePreset>> = {
   },
   paper: {
     id: 'paper',
-    label: '论文 · Paper',
+    label: 'Статья · Paper',
     vars: {
       'foreground': ld('#111111', '#ececec'),
       'muted-foreground': ld('#555555', '#a6a6a6'),
@@ -147,7 +147,7 @@ export const STYLES: Readonly<Record<StyleId, StylePreset>> = {
   },
   sketch: {
     id: 'sketch',
-    label: '手绘 · Sketch',
+    label: 'Набросок · Sketch',
     vars: {
       'foreground': ld('#1e1e1e', '#ececec'),
       'muted-foreground': ld('#5c5f66', '#a6a7ab'),
@@ -177,7 +177,7 @@ export const STYLES: Readonly<Record<StyleId, StylePreset>> = {
   },
   terminal: {
     id: 'terminal',
-    label: '终端 · Terminal',
+    label: 'Терминал · Terminal',
     vars: {
       'foreground': ld('#1f2328', '#d6dccf'),
       'muted-foreground': ld('#59636e', '#8f9a8c'),

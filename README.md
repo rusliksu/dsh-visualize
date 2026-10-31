@@ -11,6 +11,7 @@
   Форк дописывает в durable-контент версионированный блок `dsh-visualize/v1:` с записью `{ turn, callId, meta }`,
   и рамка восстанавливается из него при повторе.
 - Безопасное чтение: берётся только блок с префиксом `dsh-visualize/v1:`; повреждённая или чужая запись игнорируется.
+- **Русская страница настроек** — «Стиль карточки», названия стилей, подписи, примеры и раздел своих файлов стиля; локаль `ru` больше не падает в китайский.
 - Остальное поведение — как в апстриме 0.1.7.
 
 Установка из этого форка:
@@ -20,7 +21,7 @@ git clone --branch ruslan-build https://github.com/rusliksu/dsh-visualize.git
 cd dsh-visualize
 npm install && npm run build
 npm pack
-dsh plugin --profile desktop add ./nagi-ovo-dsh-visualize-0.1.7-ptc.2.tgz
+dsh plugin --profile desktop add ./nagi-ovo-dsh-visualize-0.1.7-ptc.3.tgz
 ```
 
 Или сразу из ветки:

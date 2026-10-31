@@ -1,5 +1,41 @@
 # dsh-visualize
 
+> **Это форк.** Неофициальная сборка от [rusliksu](https://github.com/rusliksu).
+> Апстрим: [Nagi-ovo/dsh-visualize](https://github.com/Nagi-ovo/dsh-visualize) — BSD-3-Clause, © Jesse Zhang.
+> С автором апстрима не связан; изменения перечислены ниже.
+
+## 🇷🇺 Что даёт этот форк / What this build adds
+
+- **Карточка переживает повтор проигранного вложенного вызова.** PTC сохраняет содержимое вложенного вызова,
+  но теряет `presentationMeta` — после перезапуска или повторного проигрывания карточка оставалась без рамки.
+  Форк дописывает в durable-контент версионированный блок `dsh-visualize/v1:` с записью `{ turn, callId, meta }`,
+  и рамка восстанавливается из него при повторе.
+- Безопасное чтение: берётся только блок с префиксом `dsh-visualize/v1:`; повреждённая или чужая запись игнорируется.
+- Остальное поведение — как в апстриме 0.1.7.
+
+Установка из этого форка:
+
+```bash
+git clone --branch ruslan-build https://github.com/rusliksu/dsh-visualize.git
+cd dsh-visualize
+npm install && npm run build
+npm pack
+dsh plugin --profile desktop add ./nagi-ovo-dsh-visualize-0.1.7-ptc.1.tgz
+```
+
+Или сразу из ветки:
+
+```bash
+dsh plugin --profile desktop add github:rusliksu/dsh-visualize#ruslan-build
+```
+
+<details>
+<summary>English</summary>
+
+Nested (PTC) calls persist tool content without `presentationMeta`, so a replayed card lost its frame. This fork appends a versioned `dsh-visualize/v1:` record `{ turn, callId, meta }` to the durable content and restores the frame from it. Damaged or foreign records are ignored. Everything else matches upstream 0.1.7.
+
+</details>
+
 ![dsh-visualize](assets/social-preview.jpg)
 
 <p align="center">

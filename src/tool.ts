@@ -29,6 +29,7 @@ import {
   type VisualizeAction,
   type VisualizeMode,
 } from './fragment.ts'
+import { PRESENTATION_PREFIX } from './presentation.ts'
 
 export { VISUALIZE_TOOL_NAME } from './fragment.ts'
 
@@ -161,6 +162,26 @@ export function visualizeTool(
     // conflict. An update reads a card before rewriting it, so parallel
     // updates would each patch a base the other has already superseded.
     isConcurrencySafe: args => (args.action ?? 'create') === 'create',
+    // PTC persists content but omits presentationMeta; keep the complete card
+    // record in a durable content block so a replayed call rebuilds the frame.
+    finalizeContent(exec, result) {
+      if (exec.parent === undefined || exec.agent === undefined || result.isError) return undefined
+      const projections = (ctx as unknown as {
+        get(name: string): {
+          stateOf(session: unknown, key: string): { lastTurn?: number } | undefined
+        } | undefined
+      }).get('sessionProjections')
+      const turn = projections?.stateOf(exec.agent.session, 'turnBoundary')?.lastTurn
+      if (turn === undefined || !Number.isSafeInteger(turn) || turn < 0) return undefined
+      const value = result.value
+      if (value === null || typeof value !== 'object' || Array.isArray(value)) return undefined
+      const meta = visualizeMetaFrom({ ...value as Record<string, unknown>, kind: 'visualize' })
+      if (meta === undefined) return undefined
+      return [...result.content, {
+        type: 'text' as const,
+        text: PRESENTATION_PREFIX + JSON.stringify({ turn, callId: exec.callId, meta }),
+      }]
+    },
     async execute(args, exec) {
       const action = (args.action ?? 'create') as VisualizeAction
       // A page card's file name says so, so a patch that forgets to restate
